@@ -1,29 +1,24 @@
-<!doctype html>
-<html lang="ja">
-<head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>かんたん じんせいゲーム</title>
 <style>
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
-  html { height: 100%; min-height: -webkit-fill-available; }
-  body { margin: 0; min-height: 100%; min-height: -webkit-fill-available; overflow: hidden; touch-action: manipulation; }
+  html, body { margin: 0; height: 100%; overflow: hidden; touch-action: manipulation; }
   body {
     font-family: "Hiragino Maru Gothic ProN", "Rounded Mplus 1c", sans-serif;
     background: #eafaff;
     display: flex; flex-direction: column; align-items: center;
     height: 100dvh; color: #4e342e;
-    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
   }
-  h1 { margin: 5px 0 0; font-size: 5vmin; color: #ff7043; text-shadow: 2px 2px 0 #fff; }
+  h1 { margin: 2px 0 0; font-size: min(5vmin, 4.2dvh); color: #ff7043; text-shadow: 2px 2px 0 #fff; }
 
   #turn {
-    margin: 4px 0; padding: 5px 22px; border-radius: 30px;
-    font-size: 4.4vmin; color: #fff; font-weight: bold;
+    margin: 3px 0; padding: 4px 20px; border-radius: 30px;
+    font-size: min(4.4vmin, 3.4dvh); color: #fff; font-weight: bold;
     box-shadow: 0 3px 0 rgba(0,0,0,.2); min-width: 40vmin; text-align: center;
   }
 
-  #board { position: relative; width: 95vmin; height: 42vmin;
+  #board { position: relative; width: 96vw; height: min(46vmin, 38dvh);
            border-radius: 3vmin; overflow: hidden; box-shadow: 0 1vmin 2vmin rgba(0,0,0,.2);
            background: linear-gradient(#79c6ff 0%, #b7e6ff 55%, #ddf5ff 100%); }
   #board .sun { position: absolute; left: 6vmin; top: 4vmin; width: 11vmin; height: 11vmin;
@@ -40,7 +35,7 @@
     font-size: 3.4vmin; line-height: 1; text-align: center;
     border: 0.6vmin solid #fff; z-index: 10;
     transform: translate(-50%, -100%);
-    transition: left .32s cubic-bezier(.34,1.56,.64,1), top .32s cubic-bezier(.34,1.56,.64,1);
+    transition: left .42s cubic-bezier(.34,1.56,.64,1), top .42s cubic-bezier(.34,1.56,.64,1);
     box-shadow: 0 0.4vmin 0.7vmin rgba(0,0,0,.4);
   }
   .token.current { width: 7.6vmin; height: 7.6vmin; font-size: 4vmin; z-index: 11;
@@ -49,14 +44,14 @@
 
   #status { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; margin: 5px 0; }
   .chip { display: flex; align-items: center; gap: 5px; padding: 3px 12px; border-radius: 20px;
-    background: #fff; font-size: 3.6vmin; box-shadow: 0 2px 0 rgba(0,0,0,.12); }
+    background: #fff; font-size: min(3.6vmin, 2.8dvh); box-shadow: 0 2px 0 rgba(0,0,0,.12); }
   .chip .dot { width: 3vmin; height: 3vmin; border-radius: 50%; border: 2px solid #fff; }
   .chip.act { outline: 0.6vmin solid gold; }
 
-  #diceWrap { margin-top: 6px; perspective: 75vmin; cursor: pointer; padding: 2vmin 2vmin 3vmin; }
+  #diceWrap { margin-top: 4px; perspective: 75vmin; cursor: pointer; padding: 1vmin 2vmin 2vmin; }
   #diceWrap.off { opacity: .5; pointer-events: none; }
   #diceWrap:active .scene { transform: scale(.96); }
-  .scene { --sz: 20vmin; width: var(--sz); height: var(--sz); position: relative;
+  .scene { --sz: min(20vmin, 15dvh); width: var(--sz); height: var(--sz); position: relative;
     transform-style: preserve-3d; }
   .scene.throw { animation: throw 1.2s ease; }
   @keyframes throw {
@@ -84,13 +79,13 @@
   .cube .left   { transform: rotateY(-90deg) translateZ(calc(var(--sz)/2)); }
   .cube .top    { transform: rotateX(90deg)  translateZ(calc(var(--sz)/2)); }
   .cube .bottom { transform: rotateX(-90deg) translateZ(calc(var(--sz)/2)); }
-  #hint { font-size: 4.2vmin; min-height: 5vmin; margin: 2px 0; }
+  #hint { font-size: min(4.2vmin, 3.2dvh); min-height: min(5vmin, 4dvh); margin: 1px 0; }
 
   .overlay { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 50;
     display: none; align-items: center; justify-content: center; flex-direction: column; }
   .overlay.show { display: flex; }
-  .panel { background: #fffef7; border-radius: 5vmin; padding: 5vmin 6vmin; text-align: center;
-    box-shadow: 0 2vmin 4vmin rgba(0,0,0,.3); max-width: 92vw; }
+  .panel { background: #fffef7; border-radius: 5vmin; padding: 4vmin 5vmin; text-align: center;
+    box-shadow: 0 2vmin 4vmin rgba(0,0,0,.3); max-width: 92vw; max-height: 92dvh; overflow-y: auto; }
   .panel h2 { margin: 0 0 3vmin; font-size: 6vmin; color: #ff7043; }
   .cards { display: flex; gap: 3vmin; justify-content: center; flex-wrap: wrap; }
   .pcard { width: 26vmin; padding: 3vmin 0; border-radius: 4vmin; background: #eee;
@@ -113,8 +108,6 @@
     animation: fall linear forwards; pointer-events: none; }
   @keyframes fall { to { transform: translateY(115vh) rotate(720deg); } }
 </style>
-</head>
-<body>
 
 <h1>🚗 かんたん じんせいゲーム 🏁</h1>
 <div id="turn">よういはいい？</div>
@@ -128,6 +121,8 @@
     <h2>だれが あそぶ？</h2>
     <div class="cards" id="cards"></div>
     <p class="note">タップして えらんでね（2〜4にん）</p>
+    <h2 style="margin-top:3vmin">どこへ いく？</h2>
+    <div class="cards" id="stageCards"></div>
     <button class="bigbtn" id="startBtn" onclick="startGame()" disabled>スタート！</button>
   </div>
 </div>
@@ -152,35 +147,26 @@ const ALL_PLAYERS = [
   { key:'hina', name:'ひな', emoji:'🐤', color:'#ffb300' },
 ];
 
-/* ===== ステージ（あとで増やせる）=====
-   waypoints: くねくね道の通過点 / cells: マスの数 / events: イベントマス */
+/* ===== ステージ =====
+   F=すすむ B=もどる A=もう1かい R=おやすみ */
+const F=n=>({type:'forward',n,icon:'🚀',label:n+'すすむ'});
+const B=n=>({type:'back',n,icon:'🐌',label:n+'もどる'});
+const A=()=>({type:'again',icon:'🔁',label:'もう1かい'});
+const R=()=>({type:'rest',icon:'😴',label:'おやすみ'});
+
 const STAGES = [
-  {
-    name: 'こうえんへ いこう',
-    W: 2000, H: 1300, cells: 40,
-    waypoints: [
-      [210,1080],[460,1010],[720,1090],[980,1010],[1240,1090],[1500,1010],[1760,1080],
-      [1840,930],
-      [1760,790],[1500,860],[1240,780],[980,860],[720,780],[460,860],[210,790],
-      [175,650],
-      [240,560],[500,620],[760,540],[1020,620],[1280,540],[1540,620],[1790,560],
-      [1850,420],
-      [1760,360],[1500,420],[1240,350],[980,420],[720,350],[460,420],[230,360],
-      [195,250],
-      [260,220],[520,270],[780,210],[1040,260]
-    ],
-    events: {
-      4:  { type:'forward', n:2, icon:'🚀', label:'2すすむ' },
-      8:  { type:'rest',        icon:'😴', label:'おやすみ' },
-      12: { type:'again',       icon:'🔁', label:'もう1かい' },
-      16: { type:'back',    n:2, icon:'🐌', label:'2もどる' },
-      20: { type:'forward', n:3, icon:'🚀', label:'3すすむ' },
-      24: { type:'again',       icon:'🔁', label:'もう1かい' },
-      28: { type:'back',    n:2, icon:'🐌', label:'2もどる' },
-      32: { type:'forward', n:2, icon:'🚀', label:'2すすむ' },
-      36: { type:'rest',        icon:'😴', label:'おやすみ' },
-    }
-  }
+  { name:'こうえん', icon:'🌳', cells:40,
+    theme:{ sky:'linear-gradient(#79c6ff 0%,#b7e6ff 55%,#ddf5ff 100%)',
+            ground:'#c58b52', turf:'#7ec24a', hill:'#a6dd7a' },
+    events:{ 4:F(2), 8:R(), 12:A(), 16:B(2), 20:F(3), 24:A(), 28:B(2), 32:F(2), 36:R() } },
+  { name:'うみ', icon:'🌊', cells:44,
+    theme:{ sky:'linear-gradient(#5fc4ee 0%,#a8e4fa 55%,#e8fbff 100%)',
+            ground:'#edd189', turf:'#f9e7ae', hill:'#8fd8e8' },
+    events:{ 3:F(2), 7:B(2), 11:A(), 15:R(), 19:F(3), 23:B(3), 27:A(), 31:F(2), 35:R(), 39:F(2) } },
+  { name:'やま', icon:'⛰️', cells:48,
+    theme:{ sky:'linear-gradient(#8fb7e8 0%,#cfe3f7 55%,#eef7ff 100%)',
+            ground:'#8a6b4f', turf:'#8fbf5f', hill:'#b5c9a2' },
+    events:{ 4:B(2), 8:F(2), 12:R(), 16:A(), 20:B(3), 24:F(3), 28:R(), 32:A(), 36:B(2), 40:F(2), 44:A() } },
 ];
 let stage = STAGES[0];
 
@@ -219,7 +205,7 @@ function buildBoard(){
 
   // うしろの飾り（丘・雲・くさむら）
   let dec='';
-  for(let x=180;x<W;x+=780) dec+=`<ellipse cx="${x}" cy="${surf(x)+140}" rx="440" ry="250" fill="#a6dd7a" opacity="0.6"/>`;
+  for(let x=180;x<W;x+=780) dec+=`<ellipse cx="${x}" cy="${surf(x)+140}" rx="440" ry="250" fill="${stage.theme.hill}" opacity="0.6"/>`;
   for(let x=340;x<W;x+=880) dec+=cloud(x, 110+((Math.floor(x/880))%2)*70, 0.9);
   for(let x=560;x<W;x+=690){ const y=surf(x); dec+=`<g transform="translate(${x},${y})"><ellipse cx="-34" cy="2" rx="40" ry="30" fill="#66bb46"/><ellipse cx="22" cy="-8" rx="48" ry="38" fill="#7ccf5a"/><ellipse cx="66" cy="4" rx="34" ry="26" fill="#66bb46"/></g>`; }
 
@@ -231,11 +217,12 @@ function buildBoard(){
   board.innerHTML=`<div class="sun"></div><div id="world"><svg id="bsvg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
     <defs><filter id="sh"><feDropShadow dx="0" dy="6" stdDeviation="4" flood-opacity="0.3"/></filter></defs>
     ${dec}
-    <path d="${gd}" fill="#c58b52"/>
-    <path d="${gl}" fill="none" stroke="#7ec24a" stroke-width="28" stroke-linejoin="round" stroke-linecap="round"/>
+    <path d="${gd}" fill="${stage.theme.ground}"/>
+    <path d="${gl}" fill="none" stroke="${stage.theme.turf}" stroke-width="28" stroke-linejoin="round" stroke-linecap="round"/>
   </svg></div>`;
+  board.style.background=stage.theme.sky;
   world=board.querySelector('#world');
-  world.style.width=(42*W/H)+'vmin';
+  world.style.width=(board.clientHeight*W/H)+'px';
   const s=world.querySelector('#bsvg');
 
   // ① ふつうのマス（あしば ブロック）
@@ -307,13 +294,26 @@ function buildCards(){
     box.appendChild(el);
   });
 }
+let selStage=0;
+function buildStageCards(){
+  const bx=document.getElementById('stageCards'); bx.innerHTML='';
+  STAGES.forEach((st,i)=>{
+    const el=document.createElement('div');
+    el.className='pcard'+(i===selStage?' sel':'');
+    el.innerHTML=`<div class="face">${st.icon}</div><div class="nm">${st.name}</div><div class="chk">${i===selStage?'✔':''}</div>`;
+    el.onclick=()=>{ selStage=i; buildStageCards(); };
+    bx.appendChild(el);
+  });
+}
 function showSetup(){
   document.getElementById('win').classList.remove('show');
   document.getElementById('setup').classList.add('show');
-  buildCards(); document.getElementById('startBtn').disabled=selectedKeys.length<2;
+  buildCards(); buildStageCards();
+  document.getElementById('startBtn').disabled=selectedKeys.length<2;
 }
 function startGame(){
   if(selectedKeys.length<2) return;
+  stage=STAGES[selStage];
   document.getElementById('setup').classList.remove('show');
   document.getElementById('win').classList.remove('show');
   players=ALL_PLAYERS.filter(p=>selectedKeys.includes(p.key)).map(p=>({...p,pos:0,skip:false}));
@@ -375,8 +375,17 @@ function beep(f,dur=0.12,type='square'){ try{
 const REST={1:[0,0],2:[-90,0],3:[0,-90],4:[0,90],5:[90,0],6:[0,180]};
 let spinX=0, spinY=0;
 const scene=document.querySelector('.scene');
+// 1〜6が かならず 同じ確率になるサイコロ（crypto乱数＋偏りを捨てる）
+function d6(){
+  if(window.crypto&&crypto.getRandomValues){
+    const b=new Uint8Array(1);
+    do{ crypto.getRandomValues(b); }while(b[0]>=252); // 252=6*42 → 余りの偏りなし
+    return 1+(b[0]%6);
+  }
+  return 1+Math.floor(Math.random()*6);
+}
 async function animateDice(){
-  const n=1+Math.floor(Math.random()*6);
+  const n=d6();
   const [bx,by]=REST[n];
   // まわす回数（360の倍数ぶんは目が変わらないので、目をキープしたまま何回転もさせる）
   spinX += 4 + Math.floor(Math.random()*3);
@@ -395,7 +404,7 @@ async function moveSteps(p,k,dir){
   for(let s=0;s<k;s++){
     if(dir>0&&p.pos>=N-1) break;
     if(dir<0&&p.pos<=0) break;
-    p.pos+=dir; positionTokens(); beep(dir>0?640+p.pos*8:400,.12); updateTurnUI(); await sleep(320);
+    p.pos+=dir; positionTokens(); beep(dir>0?640+p.pos*8:400,.12); updateTurnUI(); await sleep(480);
   }
 }
 async function applyEvent(p,ev){
@@ -440,8 +449,13 @@ function win(p){
     document.body.appendChild(c); setTimeout(()=>c.remove(),5500); }
 }
 
+// がめんの むきが かわったら はば を けいさんしなおす
+window.addEventListener('resize',()=>{
+  if(!world||!players.length) return;
+  world.style.width=(board.clientHeight*W/H)+'px';
+  positionTokens();
+  scrollTo(centers[players[turnIdx].pos].x);
+});
+
 diceWrap.addEventListener('click',roll);
-buildCards();
-</script>
-</body>
-</html>
+buildCards(); buildStageCards();
